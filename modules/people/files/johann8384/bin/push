@@ -1,0 +1,2 @@
+#!/bin/bash
+branch_name=$(git symbolic-ref -q HEAD) && branch_name=${branch_name##refs/heads/} && branch_name=${branch_name:-HEAD} && git commit -a -m '$1' && git push origin $branch_name && ssh ops011.sjc2.turn.com "sudo /etc/puppet/stash-puppet-post-receive.sh"

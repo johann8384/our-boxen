@@ -1,0 +1,37 @@
+#! /usr/bin/env bash
+
+BRANCH=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+
+TARGET=Contegix
+ISSUE=0
+USER=johann8384
+
+while getopts “hi:p:r:l:cf” OPTION
+do
+     case $OPTION in
+         h)
+             usage
+             exit 1
+             ;;
+         i)
+             ISSUE=$OPTARG
+             ;;
+         t)
+             TARGET=$OPTARG
+             ;;
+         u)
+             USER=$OPTARG
+             ;;
+         ?)
+             usage
+             exit
+             ;;
+     esac
+done
+
+if [ "$ISSUE" -lt "1" ]; then
+  echo "You must supply an issue.";
+  exit 0;
+fi
+
+/usr/bin/env hub pull-request -i $ISSUE -b $TARGET:master -h $USER:$BRANCH
