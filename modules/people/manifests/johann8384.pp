@@ -50,9 +50,9 @@ class people::johann8384 {
   git::config::global { 'alias.br': value => 'branch' }
   git::config::global { 'format.pretty': value => '%C(yellow)%h%Creset %C(magenta)%cd%Creset %d %s' }
 
-  include ::projects::turn_git
+  include ::projects::techops_git
 
-  ::stdrepo::repo { ['opentsdb', 'tcollector', 'opentsdb-discoveryplugins', 'splicer', 'opentsdb.net': }
+  ::stdrepo::repo { ['opentsdb', 'tcollector', 'opentsdb-discoveryplugins', 'splicer', 'opentsdb.net']: }
 
   repository { 'scopatz-nanorc':
     source => 'scopatz/nanorc',

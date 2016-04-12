@@ -1,4 +1,4 @@
-class project::techops_git (
+class projects::techops_git (
   $code_path     = "/Users/${::boxen_user}/code",
   $email_address = $::work_email,
 ) {
