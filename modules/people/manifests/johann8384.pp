@@ -150,6 +150,7 @@ class people::johann8384 {
   package {
     [
       'ansible',
+      'automake',
       'go',
       'gpg-agent',
       'git',
