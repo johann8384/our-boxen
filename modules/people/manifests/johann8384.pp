@@ -20,7 +20,6 @@ class people::johann8384 {
   $home  = "/Users/${::boxen_user}"
   $code  = "${home}/code"
 
-
   file { $code:
     ensure  => directory
   }
@@ -33,7 +32,7 @@ class people::johann8384 {
   # Git
   git::config::global { 'alias.master': value => '!git checkout master && git pull origin master' }
   git::config::global { 'user.name': value => 'Jonathan Creasy' }
-  git::config::global { 'user.email': value => 'jonathan.creasy@gmail.com' }
+  git::config::global { 'user.email': value => $::github_email }
   git::config::global { 'rebase.autosquash': value => 'true' }
   git::config::global { 'color.ui': value => 'true' }
   git::config::global { 'color.branch': value => 'auto' }
@@ -42,7 +41,6 @@ class people::johann8384 {
   git::config::global { 'color.showbranch': value => 'auto' }
   git::config::global { 'core.editor': value => 'nano' }
   git::config::global { 'core.whitespace': value => 'fix,-indent-with-non-tab,trailing-space,cr-at-eol' }
-  #git::config::global { 'core.excludesfile': value => "${home}/.gitignore" }
   git::config::global { 'apply.whitespace': value => 'nowarn' }
   git::config::global { 'branch.autosetuprebase': value => 'always' }
   git::config::global { 'log.date': value => 'relative' }
@@ -52,78 +50,14 @@ class people::johann8384 {
   git::config::global { 'alias.br': value => 'branch' }
   git::config::global { 'format.pretty': value => '%C(yellow)%h%Creset %C(magenta)%cd%Creset %d %s' }
 
-  git::config::local { 'turn_puppet_email':
-    ensure => present,
-    repo   => "${code}/turn/puppet",
-    key    => 'user.email',
-    value  => 'jonathan.creasy@turn.com',
-    require => Repository['turn-puppet'],
-  }
+  include ::projects::turn_git
 
-  repository { 'turn-puppet':
-    source => 'ssh://git@stash.turn.com:7999/tops/puppet.git',
-    path => "${code}/turn/puppet",
-    require => File["${code}/turn"],
-  }
-
-  git::config::local { 'turn_dns_email':
-    ensure => present,
-    repo   => "${code}/turn/dns",
-    key    => 'user.email',
-    value  => 'jonathan.creasy@turn.com',
-    require => Repository['turn-dns'],
-  }
-
-  repository { 'turn-dns':
-    source => 'ssh://git@stash.turn.com:7999/tops/dns.git',
-    path => "${code}/turn/dns",
-    require => File["${code}/turn"],
-  }
-
-  git::config::local { 'turn_nagios_email':
-    ensure => present,
-    repo   => "${code}/turn/nagios",
-    key    => 'user.email',
-    value  => 'jonathan.creasy@turn.com',
-    require => Repository['turn-nagios'],
-  }
-
-  repository { 'turn-nagios':
-    source => 'ssh://git@stash.turn.com:7999/tops/nagios.git',
-    path => "${code}/turn/nagios",
-    require => File["${code}/turn"],
-  }
-
-  repository { 'johann8384-opentsdb':
-    source => 'johann8384/opentsdb',
-    path => "${code}/opentsdb",
-  }
-
-  repository { 'johann8384-tcollector':
-    source => 'johann8384/tcollector',
-    path => "${code}/tcollector",
-  }
-
-  repository { 'johann8384-opentsdb-discoveryplugins':
-    source => 'johann8384/opentsdb-discoveryplugins',
-    path => "${code}/opentsdb-discoveryplugins",
-  }
-
-  repository { 'johann8384-splicer':
-    source => 'johann8384/splicer',
-    path => "${code}/turn/splicer",
-  }
+  ::stdrepo::repo { ['opentsdb', 'tcollector', 'opentsdb-discoveryplugins', 'splicer', 'opentsdb.net': }
 
   repository { 'scopatz-nanorc':
     source => 'scopatz/nanorc',
     path => "${home}/.nano",
   }
-
-#  class { 'nodejs::global': version => '0.12.7' }
-
-#  class { 'intellij':
-#    edition => 'ultimate',
-#  }
 
   # .bash_profile
   file { "${home}/.bash_profile":
@@ -154,27 +88,22 @@ class people::johann8384 {
     source => 'puppet:///modules/people/johann8384/path',
   }
 
-  # .nanorc
   file { "${home}/.nanorc":
     source => 'puppet:///modules/people/johann8384/nanorc',
   }
 
-  # .nanorc
   file { "${home}/.inputrc":
     source => 'puppet:///modules/people/johann8384/inputrc',
   }
 
-  # .nanorc
   file { "${home}/.bash_prompt":
     source => 'puppet:///modules/people/johann8384/bash_prompt',
   }
 
-  # .nanorc
   file { "${home}/.npmrc":
     source => 'puppet:///modules/people/johann8384/npmrc',
   }
 
-  # .nanorc
   file { "${home}/.pylintrc":
     source => 'puppet:///modules/people/johann8384/pylintrc',
   }
@@ -204,7 +133,7 @@ class people::johann8384 {
     group   => 'staff',
   }
 
-  sudoers { 'johann8384_sudo':
+  sudoers { "${boxen_user}_sudo":
     users    => $::boxen_user,
     type     => 'user_spec',
     commands => '(ALL) NOPASSWD: ALL',
@@ -260,11 +189,11 @@ class people::johann8384 {
   include osx::disable_app_quarantine
   include osx::global::disable_autocorrect
   include osx::global::tap_to_click
-  #include osx::keyboard::capslock_to_control
 
-  #class { 'osx::global::natural_mouse_scrolling':
-  #  enabled => false
-  #}
+  class { 'osx::global::natural_mouse_scrolling':
+    enabled => true
+  }
+
   boxen::osx_defaults { 'enable trackpad three-finger drag':
     ensure => present,
     domain => 'com.apple.driver.AppleBluetoothMultitouch.trackpad',

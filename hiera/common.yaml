@@ -1,0 +1,4 @@
+---
+domain: ghostlab.net
+user_email: %{::boxen_user}@%{::domain}
+github_email: %{::user_email}
