@@ -8,3 +8,9 @@ docker::compose::version: "1.6.2"
 docker::engine::version: "1.10.3"
 docker::machine::version: "0.6.0"
 docker::swarm::version: "1.1.3"
+cassandra::config::storage_port: 7000
+cassandra::config::ssl_storage_port: 7001
+cassandra::config::rpc_port: 9160
+cassandra::config::native_port: 9042
+elasticsearch::http_port: 9200
+elasticsearch::transport_port: 9300

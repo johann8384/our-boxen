@@ -1,23 +1,23 @@
 class people::johann8384 {
-  include docker
-  include virtualbox
+  include bash
+  include bash::completion
+  include cassandra
   include chrome
+  include docker
+  include elasticsearch
+  include geoip
+  include hub
   include iterm2::colors::solarized_dark
   include iterm2::stable
   include java
-  include wget
+  include memcached
+  include redis
   include screen
   include slack
   include steam
-  include hub
-  include bash
-  include bash::completion
-  include elasticsearch
-  include redis
-  include memcached
   include vagrant
-  include cassandra
-  include geoip
+  include virtualbox
+  include wget
   vagrant::plugin { 'vagrant-dns': }
   vagrant::plugin { 'vagrant-vbguest': }
   package { 'qt': }
