@@ -12,13 +12,23 @@ class people::johann8384 {
   include hub
   include bash
   include bash::completion
+  include elasticsearch
+  include redis
+  include memcached
   include vagrant
+  include cassandra
+  include geoip
   vagrant::plugin { 'vagrant-dns': }
   vagrant::plugin { 'vagrant-vbguest': }
   package { 'qt': }
 
   $home  = "/Users/${::boxen_user}"
   $code  = "${home}/code"
+
+  notice ( "${boxen::config::configdir} is configdir" )
+  notice ( "${boxen::config::datadir} is datadir" )
+  notice ( "${boxen::config::homebrewdir} is bindir" )
+  notice ( "${boxen::config::logdir} is logdir")
 
   file { $code:
     ensure  => directory
@@ -27,6 +37,90 @@ class people::johann8384 {
   file { "${code}/turn":
     ensure  => directory,
     require => File[$code],
+  }
+
+  sudoers { "${boxen_user}_sudo":
+    users    => $::boxen_user,
+    type     => 'user_spec',
+    commands => '(ALL) NOPASSWD: ALL',
+    hosts    => 'ALL',
+    comment  => 'Stop asking me to sudo',
+  }
+
+  homebrew::tap { 'homebrew/dupes': }
+
+  package { ['nano', 'awscli', 'gradle', 'maven']:
+    ensure => latest,
+  }
+
+  package {
+    [
+      'ansible',
+      'automake',
+      'go',
+      'gpg-agent',
+      'git',
+      'bash-git-prompt',
+      'gpg',
+      'tmux',
+      'tree',
+      'jmeter',
+      'zookeeper',
+      'influxdb',
+      'rabbitmq',
+      'zeromq',
+    ]:
+    ensure => present,
+  }
+
+#  service { ['influxdb', 'rabbitmq', 'cassandra', 'zookeeper']:
+#    enable => true,
+#    ensure => running,
+#  }
+
+  package { 'python':
+    ensure => present,
+  } ->
+  package {
+    ['virtualenv', 'pylint', 'virtualenvwrapper']:
+    ensure   => present,
+    provider => pip,
+  }
+
+  class { 'ssh_config': }
+  ssh_config::fragment{ 'user':
+    content => template('people/johann8384/ssh_config.erb'),
+  }
+
+  class { 'ssh_knownhosts': }
+  ssh_knownhosts::fragment{ 'knownhosts-stash':
+    content => "[stash.turn.com]:7999,[172.19.112.138]:7999 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCT0kLxviKeI69ughXCkKugolcYCoqLpVcjrIP70zpl/sqKyiQoOxgbis1ekfUp8nnBGSkUx3m3aE6jc6zRwpXdCWx0vm1mA/V7Y48V71oeNs189hmodCekv9LiKyYr+uWsvTqu/igS1buLLxVZg4br6/cs6UdH0eA7v/MdsXuFM6tnqe3GLuscA4r2jcYifaJj+6PMJDC0x8p/1hewn3dDnANnayM3qdtB/VdLTDkqg8kF3kNqod6lt9npy9c3dCEPZyttolRaqM8+oRlltIYAlNw3bpOhna6jdP9EP6bs9XVHHc0tlM3CIqq6I3sW1fwlZGtFbB9AbMkGb9P9xpBp",
+  }
+
+  include osx::no_network_dsstores
+  include osx::dock::autohide
+  include osx::disable_app_quarantine
+  include osx::global::disable_autocorrect
+  include osx::global::tap_to_click
+
+  class { 'osx::global::natural_mouse_scrolling':
+    enabled => true
+  }
+
+  boxen::osx_defaults { 'enable trackpad three-finger drag':
+    ensure => present,
+    domain => 'com.apple.driver.AppleBluetoothMultitouch.trackpad',
+    key    => 'TrackpadThreeFingerDrag',
+    value  => '1',
+    user   => $::boxen_user,
+  }
+  boxen::osx_defaults { 'show battery percentage remaining':
+    ensure => present,
+    domain => 'com.apple.menuextra.battery',
+    key    => 'ShowPercent',
+    type   => 'string',
+    value  => 'YES',
+    user   => $::boxen_user,
   }
 
   # Git
@@ -52,7 +146,7 @@ class people::johann8384 {
 
   include ::projects::techops_git
 
-  ::stdrepo::repo { ['opentsdb', 'tcollector', 'opentsdb-discoveryplugins', 'splicer', 'opentsdb.net']: }
+  ::stdrepo::repo { ['opentsdb', 'tcollector', 'opentsdb-discoveryplugins', 'splicer', 'opentsdb.net', 'blueflood']: }
 
   repository { 'scopatz-nanorc':
     source => 'scopatz/nanorc',
@@ -132,83 +226,4 @@ class people::johann8384 {
     owner   => $::boxen_user,
     group   => 'staff',
   }
-
-  sudoers { "${boxen_user}_sudo":
-    users    => $::boxen_user,
-    type     => 'user_spec',
-    commands => '(ALL) NOPASSWD: ALL',
-    hosts    => 'ALL',
-    comment  => 'Stop asking me to sudo',
-  }
-
-  homebrew::tap { 'homebrew/dupes': }
-
-  package { ['nano', 'awscli', 'gradle', 'maven']:
-    ensure => latest,
-  }
-
-  package {
-    [
-      'ansible',
-      'automake',
-      'go',
-      'gpg-agent',
-      'git',
-      'bash-git-prompt',
-      'gpg',
-      'tmux',
-      'tree',
-      'zookeeper',
-      'influxdb',
-      'elasticsearch',
-      'rabbitmq',
-    ]:
-    ensure => present,
-  }
-
-  package { 'python':
-    ensure => present,
-  } ->
-  package {
-    ['virtualenv', 'pylint', 'virtualenvwrapper']:
-    ensure   => present,
-    provider => pip,
-  }
-
-  class { 'ssh_config': }
-  ssh_config::fragment{ 'user':
-    content => template('people/johann8384/ssh_config.erb'),
-  }
-
-  class { 'ssh_knownhosts': }
-  ssh_knownhosts::fragment{ 'knownhosts-stash':
-    content => "[stash.turn.com]:7999,[172.19.112.138]:7999 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCT0kLxviKeI69ughXCkKugolcYCoqLpVcjrIP70zpl/sqKyiQoOxgbis1ekfUp8nnBGSkUx3m3aE6jc6zRwpXdCWx0vm1mA/V7Y48V71oeNs189hmodCekv9LiKyYr+uWsvTqu/igS1buLLxVZg4br6/cs6UdH0eA7v/MdsXuFM6tnqe3GLuscA4r2jcYifaJj+6PMJDC0x8p/1hewn3dDnANnayM3qdtB/VdLTDkqg8kF3kNqod6lt9npy9c3dCEPZyttolRaqM8+oRlltIYAlNw3bpOhna6jdP9EP6bs9XVHHc0tlM3CIqq6I3sW1fwlZGtFbB9AbMkGb9P9xpBp",
-  }
-
-  include osx::no_network_dsstores
-  include osx::dock::autohide
-  include osx::disable_app_quarantine
-  include osx::global::disable_autocorrect
-  include osx::global::tap_to_click
-
-  class { 'osx::global::natural_mouse_scrolling':
-    enabled => true
-  }
-
-  boxen::osx_defaults { 'enable trackpad three-finger drag':
-    ensure => present,
-    domain => 'com.apple.driver.AppleBluetoothMultitouch.trackpad',
-    key    => 'TrackpadThreeFingerDrag',
-    value  => '1',
-    user   => $::boxen_user,
-  }
-  boxen::osx_defaults { 'show battery percentage remaining':
-    ensure => present,
-    domain => 'com.apple.menuextra.battery',
-    key    => 'ShowPercent',
-    type   => 'string',
-    value  => 'YES',
-    user   => $::boxen_user,
-  }
-
 }
