@@ -87,6 +87,16 @@ class people::johann8384 {
     provider => pip,
   }
 
+  package { 'Colloquy':
+    source   => 'http://colloquy.info/downloads/colloquy-latest.zip',
+    provider => 'compressed_app'
+  }
+
+  file { "${home}/Library/Preferences/info.colloquy.plist":
+    source  => 'puppet:///modules/people/johann8384/info.colloquy.plist',
+    require => [ File[$code], Package['Colloquy']],
+  }
+
   class { 'ssh_config': }
   ssh_config::fragment{ 'user':
     content => template('people/johann8384/ssh_config.erb'),
