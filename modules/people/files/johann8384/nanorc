@@ -4,6 +4,9 @@ set tabstospaces
 ## C/C++
 include "~/.nano/c.nanorc"
 
+## Dockerfile
+include "~/.nano/Dockerfile.nanorc"
+
 ## Puppet
 include "~/.nano/puppet.nanorc"
 

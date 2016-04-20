@@ -78,6 +78,11 @@ class people::johann8384 {
 #    ensure => running,
 #  }
 
+  package { 'hangout_plugin':
+    source   => 'https://dl.google.com/googletalk/googletalkplugin/GoogleVoiceAndVideoSetup.dmg',
+    provider => 'appdmg'
+  }
+
   package { 'python':
     ensure => present,
   } ->
