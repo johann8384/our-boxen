@@ -8,7 +8,7 @@ export LC_ALL="en_US.UTF-8"
 export LANG="en_US"
 export CLICOLOR=1
 export LSCOLORS=ExFxBxDxCxegedabagacad
-export EDITOR=/usr/bin/nano
+export EDITOR=/usr/local/bin/nano
 export BLOCKSIZE=1k
 
 # Don’t clear the screen after quitting a manual page

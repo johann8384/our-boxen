@@ -1,0 +1,17 @@
+#!/usr/bin/env bash -x
+
+tmpfile=$(mktemp -t vault)
+
+ensure_tmpfile_gets_removed() {
+  rm -f $tmpfile
+}
+
+trap ensure_tmpfile_gets_removed EXIT
+
+echo $(security find-generic-password -a ansible-vault -w) > $tmpfile
+
+command="$1"
+shift
+args=$@
+
+ansible-vault $command $args --vault-password-file $tmpfile
