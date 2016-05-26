@@ -5,5 +5,39 @@ Host dev
   HostName dev
   StrictHostKeyChecking no
   UserKnownHostsFile=/dev/null
+
 Host *
   ForwardAgent yes
+  ServerAliveInterval 50
+
+Host *.tsdb.io
+  ForwardAgent yes
+  StrictHostKeyChecking no
+  User ec2-user
+
+Host *.infra.perspica.io
+  ForwardAgent yes
+  StrictHostKeyChecking no
+  ServerAliveInterval 50
+  User ec2-user
+
+Host fail2ban
+  PubkeyAuthentication no
+  PreferredAuthentications password
+  ForwardAgent no
+  Hostname access.infra.perspica.io
+  StrictHostKeyChecking no
+  User bogus
+
+Host bitbucket.org
+  User git
+  Hostname bitbucket.org
+  PreferredAuthentications publickey
+  IdentityFile ~/.ssh/id_rsa_turn
+
+Host bitbucket-perspica
+  User git
+  Hostname bitbucket.org
+  PreferredAuthentications publickey
+  IdentitiesOnly yes
+  IdentityFile ~/.ssh/id_rsa_perspica

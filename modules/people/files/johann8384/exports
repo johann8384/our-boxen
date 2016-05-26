@@ -10,7 +10,7 @@ export CLICOLOR=1
 export LSCOLORS=ExFxBxDxCxegedabagacad
 export EDITOR=/usr/local/bin/nano
 export BLOCKSIZE=1k
-
+export ANSIBLE_VAULT_PASSWORD_FILE=~/.ansible/vault_pass.txt
 # Don’t clear the screen after quitting a manual page
 export MANPAGER="less -X"
 # Highlight section titles in manual pages
